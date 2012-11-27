@@ -1,0 +1,33 @@
+fs = require 'fs'
+
+removeComment = (raw) ->
+  return raw.replace /#.*$/, ''
+trimSpace = (str) ->
+  return str.replace /^\s+|\s+$/g, ''
+
+parse = (data, delimiter=',') ->
+  # remove comment lines
+  raws = (raw for raw in data.split('\n'))
+  raws = (removeComment(raw) for raw in raws)
+  raws = (raw for raw in raws when raw)
+  # split by delimiter
+  raws = (raw.split(delimiter) for raw in raws)
+  # trim each columns
+  raws = ((trimSpace(cal) for cal in raw) for raw in raws)
+  return raws
+
+parseFile = (filename, encoding, callback, delimiter=',') ->
+  if arguments.length < 3
+    [encoding, callback] = ['utf-8', encoding]
+  fs.readFile filename, encoding, (err, data) ->
+    throw err if err
+    callback parse(data, delimiter)
+
+parseFileSync = (filename, encoding='utf-8', delimiter=',') ->
+  if arguments.length < 3
+    [encoding, delimiter] = ['utf-8', encoding]
+  parse fs.readFileSync filename, encoding
+
+exports.parse = parse
+exports.parseFile = parseFile
+exports.parseFileSync = parseFileSync

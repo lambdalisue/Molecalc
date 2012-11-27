@@ -1,0 +1,26 @@
+body {
+    width: 600px;
+    margin: 0 auto;
+    color: #3d3d3d;
+}
+
+form input {
+    text-align: right;
+}
+form input#name {
+    text-align: left;
+}
+form label:after {
+    display: inline;
+    content: ":";
+}
+.value, .unit {
+    font-family: monospace;
+}
+.unit {
+    font-size: 90%;
+}
+p.supplement {
+    font-size: 80%;
+    color: #ababab;
+}
