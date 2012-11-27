@@ -1,74 +1,132 @@
 <!DOCTYPE html>
 <html>
-
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Molecalc : " />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
+<head>
+    <meta charset="utf-8">
     <title>Molecalc</title>
-  </head>
-
-  <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/lambdalisue/Molecalc">View on GitHub</a>
-
-          <h1 id="project_title">Molecalc</h1>
-          <h2 id="project_tagline"></h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/lambdalisue/Molecalc/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/lambdalisue/Molecalc/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Molecalc maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
-  </body>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Molecule Calculation Tool</h1>
+    <p>Calculate required Weight [g] or Volume [L] for creating X [L] of Y [M] solution</p>
+    <h2>Form</h2>
+    <p class="supplement">Set Name to identify the results</p>
+    <form id="calculation">
+        <table>
+            <tr>
+                <td><label for="name">Name</label></td>
+                <td><input type="text" id="name" value="Unknown"></td>
+            </tr>
+            <tr>
+                <td><label for="first">Final concentration</label></td>
+                <td><input type="text" id="first" value="50"></td>
+                <td>
+                    <select id="first_unit">
+                        <option value="uM">uM</option>
+                        <option value="mM" selected>mM</option>
+                        <option value="M">M</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="second">Mass/Molar of source substance/solution</label></td>
+                <td><input type="text" id="second" value="1"></td>
+                <td>
+                    <select id="second_unit">
+                        <option value="g/mol">g/mol</option>
+                        <option value="uM">uM</option>
+                        <option value="mM">mM</option>
+                        <option value="M" selected>M</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="third">Total volume</label></td>
+                <td><input type="text" id="third" value="50"></td>
+                <td>
+                    <select id="third_unit">
+                        <option value="uL">uL</option>
+                        <option value="mL" selected>mL</option>
+                        <option value="L">L</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <p><input type="button" onclick="calculate();" value="Calculate">
+           <input type="button" onclick="clearResults();" value="Clear"></p>
+    </form>
+    <h2>Results</h2>
+    <p class="supplement">These results are stored in <code>localStorage</code></p>
+    <article>
+        <dl id="results"></dl>
+    </article>
+    <script src="vender/jquery.min.js"></script>
+    <script src="vender/coffee-script.js"></script>
+    <script src="src/js/calc.js"></script>
+    <script type="text/coffeescript">
+        if localStorage.results?
+            results = JSON.parse(localStorage.results)
+            for result in results
+                $("#results").append result
+        else
+            results = new Array
+        parseUnit = (unit) ->
+            if unit in ['uM', 'uL']
+                return Math.pow(10, -6)
+            if unit in ['mM', 'mL']
+                return Math.pow(10, -3)
+            return 1
+        parseValue = (value, unit) ->
+            value = value * parseUnit(unit)
+            if value is 0
+                alert "Please fill the #{name} argument"
+                return null
+            return value
+        parseFn = ->
+            unit = $("#second_unit").val()
+            return if unit is "g/mol" then "gram" else "volume"
+        window.clearResults = ->
+            $("#results").empty()
+            results = new Array
+            delete localStorage.results
+        window.calculate = ->
+            name = $('#name').val()
+            first = $('#first').val()
+            firstUnit = $('#first_unit').val()
+            second = $('#second').val()
+            secondUnit = $('#second_unit').val()
+            third = $('#third').val()
+            thirdUnit = $('#third_unit').val()
+            f = parseValue first, firstUnit
+            s = parseValue second, secondUnit
+            t = parseValue third, thirdUnit
+            return if null in [f, s, t]
+            fn = parseFn()
+            r = calc[fn](f, s, t)
+            unit = if fn is "gram" then "g" else "L"
+            if r < Math.pow(10, -3)
+                unit = "u#{unit}"
+                r = r * Math.pow(10, 6)
+                r = r * 1000
+                r = Math.round(r) / 1000
+            else if r < Math.pow(10, 0)
+                unit = "m#{unit}"
+                r = r * Math.pow(10, 3)
+                r = r * 1000
+                r = Math.round(r) / 1000
+            display = (value, unit) ->
+                return "<span class='value'>#{value}</span> <span class='unit'>#{unit}</span>"
+            message = """
+            <dt>#{name} - #{(new Date)}</dt>
+            <dd>
+                <strong>#{display(r, unit)}</strong> is required to create #{display(third, thirdUnit)}
+                of #{display(first, firstUnit)} solution with #{display(second, secondUnit)} substance/solution
+            </dd>
+            """
+            $("#results").prepend(message)
+            results.unshift message
+            localStorage.results = JSON.stringify(results)
+    </script>
+    <small><a href="test.html">Confirm with Mocha test</a></small>
+</body>
 </html>
+
